@@ -3020,11 +3020,10 @@
             </div>
             <div class="contact-form-container animate-on-scroll">
                 <h3><i class="fas fa-paw" style="margin-right: 10px;"></i>留言咨询</h3>
-                <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
-                    <input type="hidden" name="form-name" value="contact">
-                    <p class="hidden" style="display:none;">
-                        <label>不要填写此字段: <input name="bot-field"></label>
-                    </p>
+                <form id="contactForm" action="https://formsubmit.co/aaronwei97@qq.com" method="POST" onsubmit="handleSubmit(event)">
+                    <input type="hidden" name="_subject" value="冉暖订货系统 - 新留言咨询">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">您的称呼 *</label>
@@ -3275,17 +3274,20 @@
             var successMessage = document.getElementById('successMessage');
             var formData = new FormData(form);
             
-            fetch('/', {
+            fetch(form.action, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
+                body: formData
             })
-            .then(function() {
-                successMessage.style.display = 'block';
-                form.reset();
-                setTimeout(function() {
-                    successMessage.style.display = 'none';
-                }, 5000);
+            .then(function(response) {
+                if (response.ok) {
+                    successMessage.style.display = 'block';
+                    form.reset();
+                    setTimeout(function() {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error('提交失败');
+                }
             })
             .catch(function(error) {
                 alert('提交失败，请稍后重试或直接联系微信/QQ');
