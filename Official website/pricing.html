@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>冉暖订货系统 - 价格方案</title>
+    <meta name="description" content="冉暖订货系统灵活的价格方案，支持周付、月付、季度付、年付等多种订阅方式，透明的价格体系">
+    <meta name="keywords" content="订货系统价格,软件订阅,月付年付,企业软件定价,冉暖订货系统价格">
     <link rel="icon" href="logo.ico" type="image/x-icon">
     <link rel="shortcut icon" href="logo.ico" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- 性能优化 -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <style>
         :root {
             --primary: #3498db;
@@ -979,9 +985,125 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(39, 174, 96, 0.3);
         }
+
+        /* 移动端触摸优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .pricing-card {
+                transition: none;
+            }
+            
+            .pricing-card:hover {
+                transform: none;
+            }
+            
+            .pricing-card:active {
+                transform: scale(0.98);
+                box-shadow: var(--shadow-md);
+            }
+            
+            .btn, .copy-btn {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 12px 20px;
+            }
+            
+            .copy-btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 平板优化 */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .pricing-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
+            }
+            
+            .pricing-card {
+                padding: 30px 20px;
+            }
+        }
+
+        /* 手机横屏优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .page-header {
+                padding: 60px 20px 40px;
+            }
+            
+            .section {
+                padding: 50px 20px;
+            }
+            
+            .pricing-grid {
+                gap: 20px;
+            }
+        }
+
+        /* 小屏幕深度优化 */
+        @media (max-width: 400px) {
+            .pricing-card {
+                padding: 20px 15px;
+            }
+            
+            .pricing-title {
+                font-size: 1.3rem;
+            }
+            
+            .pricing-price {
+                font-size: 1.8rem;
+            }
+            
+            .wechat-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+            
+            .wechat-qr-img {
+                width: 180px;
+                height: 180px;
+            }
+        }
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            z-index: 1002;
+            transition: top 0.3s ease;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        a:focus, button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-contrast: high) {
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
+    <a href="#content" class="skip-link">跳转到主要内容</a>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">
