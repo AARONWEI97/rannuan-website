@@ -2220,6 +2220,42 @@
 
             .hero-carousel {
                 touch-action: pan-y pinch-zoom;
+                user-select: none;
+            }
+
+            .hero-carousel-slide {
+                touch-action: manipulation;
+            }
+
+            .carousel-indicators button {
+                min-width: 40px;
+                min-height: 40px;
+                padding: 8px;
+            }
+
+            /* 手势提示 */
+            .swipe-hint {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.9rem;
+                animation: pulse 2s infinite;
+                pointer-events: none;
+            }
+
+            @keyframes pulse {
+                0%, 100% { opacity: 0.7; }
+                50% { opacity: 1; }
+            }
+
+            .hero-carousel:hover .swipe-hint {
+                opacity: 0;
+                transition: opacity 0.3s ease;
             }
 
             .hero-carousel-slide img {
@@ -2554,9 +2590,121 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(39, 174, 96, 0.3);
         }
+
+        /* 移动端触摸优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .nav-link, .social-icon {
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            .hero-buttons .btn {
+                padding: 14px 24px;
+                font-size: 1.1rem;
+            }
+            
+            .mobile-menu-btn {
+                min-width: 50px;
+                min-height: 50px;
+                padding: 13px;
+            }
+            
+            .form-control {
+                min-height: 48px;
+                font-size: 16px;
+                padding: 12px 16px;
+            }
+            
+            .form-control:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+            
+            /* 触摸友好的卡片交互 */
+            .feature-card, .ai-feature-card {
+                transition: none;
+            }
+            
+            .feature-card:hover, .ai-feature-card:hover {
+                transform: none;
+            }
+            
+            .feature-card:active, .ai-feature-card:active {
+                transform: scale(0.98);
+                background: var(--light);
+            }
+        }
+
+        /* 平板优化断点 */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+            
+            .ai-features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* 手机横屏优化 */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .hero {
+                min-height: 80vh;
+            }
+            
+            .hero-content {
+                padding: 20px 0;
+            }
+            
+            .section {
+                padding: 50px 20px;
+            }
+        }
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            z-index: 1002;
+            transition: top 0.3s ease;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        a:focus, button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-contrast: high) {
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
+    <a href="#hero" class="skip-link">跳转到主要内容</a>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">
@@ -3780,6 +3928,67 @@
                 });
             });
         });
+        // 移动端性能优化
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isTouchDevice) {
+            // 优化轮播图触摸体验
+            const carousel = document.querySelector('.hero-carousel');
+            if (carousel) {
+                let startX = 0;
+                let startY = 0;
+                let startTime = 0;
+                
+                carousel.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    startTime = Date.now();
+                }, { passive: true });
+                
+                carousel.addEventListener('touchend', (e) => {
+                    const endX = e.changedTouches[0].clientX;
+                    const endY = e.changedTouches[0].clientY;
+                    const endTime = Date.now();
+                    
+                    const deltaX = startX - endX;
+                    const deltaY = Math.abs(startY - endY);
+                    const deltaTime = endTime - startTime;
+                    
+                    // 判断是否为水平滑动手势
+                    if (Math.abs(deltaX) > 50 && deltaY < 30 && deltaTime < 300) {
+                        if (deltaX > 0) {
+                            nextSlide();
+                        } else {
+                            prevSlide();
+                        }
+                    }
+                }, { passive: true });
+            }
+            
+            // 优化表单体验
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    // 滚动到可视区域
+                    setTimeout(() => {
+                        input.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 300);
+                });
+            });
+        }
+
+        // 防抖处理窗口resize
+        const debounceResize = debounce(() => {
+            // 重新计算轮播图尺寸
+            if (typeof initCarousel === 'function') {
+                initCarousel();
+            }
+        }, 250);
+
+        window.addEventListener('resize', debounceResize);
     </script>
     <!-- QQ弹窗 -->
     <div class="wechat-modal" id="qqModal" onclick="closeQQModal(event)">
